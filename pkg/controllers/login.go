@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"devbook-app/internal/config"
+	"devbook-app/internal/cookies"
 	"devbook-app/pkg/models"
 	"devbook-app/pkg/utils"
 	"encoding/json"
@@ -43,7 +44,10 @@ func FazerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Cookies.
+	if err = cookies.Salvar(w, dadosAuth.ID, dadosAuth.Token); err != nil {
+		utils.JSON(w, http.StatusUnprocessableEntity, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
 
 	utils.JSON(w, http.StatusOK, nil)
 }

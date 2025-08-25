@@ -2,6 +2,7 @@ package main
 
 import (
 	"devbook-app/internal/config"
+	"devbook-app/internal/cookies"
 	"devbook-app/pkg/router"
 	"devbook-app/pkg/utils"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 
 func main() {
 	config.Carregar()
+	cookies.Configurar()
 	utils.CarregarTemplates()
 	app := router.Gerar()
 
