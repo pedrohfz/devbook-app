@@ -1,6 +1,7 @@
 package main
 
 import (
+	"devbook-app/internal/config"
 	"devbook-app/pkg/router"
 	"devbook-app/pkg/utils"
 	"fmt"
@@ -9,9 +10,10 @@ import (
 )
 
 func main() {
+	config.Carregar()
 	utils.CarregarTemplates()
 	app := router.Gerar()
 
-	fmt.Println("Rodando WebApp na porta :3000!")
-	log.Fatal(http.ListenAndServe(":3000", app))
+	fmt.Printf("Escutando na porta %d\n", config.Porta)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%d", config.Porta), app))
 }

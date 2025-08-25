@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"bytes"
+	"devbook-app/internal/config"
 	"devbook-app/pkg/models"
 	"devbook-app/pkg/utils"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -22,7 +24,8 @@ func FazerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := http.Post("http://localhost:5000/login", "application/json", bytes.NewBuffer(usuario))
+	url := fmt.Sprintf("%s/login", config.APIURL)
+	response, err := http.Post(url, "application/json", bytes.NewBuffer(usuario))
 	if err != nil {
 		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
 		return

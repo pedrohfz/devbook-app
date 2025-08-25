@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"bytes"
+	"devbook-app/internal/config"
 	"devbook-app/pkg/utils"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -23,7 +25,8 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := http.Post("http://localhost:5000/usuarios", "application/json", bytes.NewBuffer(usuario))
+	url := fmt.Sprintf("%s/usuarios", config.APIURL)
+	response, err := http.Post(url, "application/json", bytes.NewBuffer(usuario))
 	if err != nil {
 		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
 		return
