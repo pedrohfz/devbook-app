@@ -23,7 +23,7 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	response, err := http.Post("http://localhost:9000/usuarios", "application/json", bytes.NewBuffer(usuario))
+	response, err := http.Post("http://localhost:5000/usuarios", "application/json", bytes.NewBuffer(usuario))
 	if err != nil {
 		log.Fatal(err)
 	}
