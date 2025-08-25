@@ -28,6 +28,7 @@ func FazerLogin(w http.ResponseWriter, r *http.Request) {
 		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
 		return
 	}
+	defer response.Body.Close()
 
 	token, _ := io.ReadAll(response.Body)
 	fmt.Println(response.StatusCode, string(token))
