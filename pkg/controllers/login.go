@@ -2,10 +2,9 @@ package controllers
 
 import (
 	"bytes"
+	"devbook-app/pkg/models"
 	"devbook-app/pkg/utils"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -30,6 +29,18 @@ func FazerLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	defer response.Body.Close()
 
-	token, _ := io.ReadAll(response.Body)
-	fmt.Println(response.StatusCode, string(token))
+	if response.StatusCode >= 400 {
+		utils.TratarStatusCodeDeErro(w, response)
+		return
+	}
+
+	var dadosAuth models.DadosAuth
+	if err = json.NewDecoder(response.Body).Decode(&dadosAuth); err != nil {
+		utils.JSON(w, http.StatusUnprocessableEntity, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	// TODO: Cookies.
+
+	utils.JSON(w, http.StatusOK, nil)
 }
