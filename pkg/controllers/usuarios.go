@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"bytes"
+	"devbook-app/pkg/utils"
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -20,14 +19,21 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		utils.JSON(w, http.StatusBadRequest, utils.ErroAPI{Erro: err.Error()})
+		return
 	}
 
 	response, err := http.Post("http://localhost:5000/usuarios", "application/json", bytes.NewBuffer(usuario))
 	if err != nil {
-		log.Fatal(err)
+		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
+		return
 	}
 	defer response.Body.Close()
 
-	fmt.Println(response.Body)
+	if response.StatusCode >= 400 {
+		utils.TratarStatusCodeDeErro(w, response)
+		return
+	}
+
+	utils.JSON(w, response.StatusCode, nil)
 }
