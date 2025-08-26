@@ -7,8 +7,8 @@ function fazerLogin(evento) {
     url: "/login",
     method: "POST",
     data: {
-      email: $('email').val(),
-      senha: $('senha').val(),
+      email: $('#email').val(),
+      senha: $('#senha').val(),
     },
   })
     .done(function () {
