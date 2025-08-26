@@ -7,7 +7,7 @@ function fazerLogin(evento) {
     url: "/login",
     method: "POST",
     data: {
-      email: $('#email').val(),
+      email: $('#email').val(), // use # para id
       senha: $('#senha').val(),
     },
   })
@@ -15,6 +15,6 @@ function fazerLogin(evento) {
       window.location = "/home";
     })
     .fail(function () {
-      alert("Usuário ou senha inválido!");
+      alert("Usuário ou senha inválidos");
     });
 }
