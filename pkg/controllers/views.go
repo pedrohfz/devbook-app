@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"devbook-app/internal/config"
+	"devbook-app/internal/request"
 	"devbook-app/pkg/utils"
+	"fmt"
 	"net/http"
 )
 
@@ -17,5 +20,12 @@ func CarregarPaginaDeCadastroDeUsuario(w http.ResponseWriter, r *http.Request) {
 
 // CarregarPaginaPrincipal() vai carregar a página principal com as publicações.
 func CarregarPaginaPrincipal(w http.ResponseWriter, r *http.Request) {
+	url := fmt.Sprintf("%s/publicacoes", config.APIURL)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
+	if err != nil {
+		// TODO: Next class.
+	}
+
+	fmt.Println(response)
 	utils.ExecutarTemplate(w, "home.html", nil)
 }
