@@ -3,7 +3,9 @@ package controllers
 import (
 	"devbook-app/internal/config"
 	"devbook-app/internal/request"
+	"devbook-app/pkg/models"
 	"devbook-app/pkg/utils"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -23,9 +25,21 @@ func CarregarPaginaPrincipal(w http.ResponseWriter, r *http.Request) {
 	url := fmt.Sprintf("%s/publicacoes", config.APIURL)
 	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
 	if err != nil {
-		// TODO: Next class.
+		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		utils.TratarStatusCodeDeErro(w, response)
+		return
 	}
 
-	fmt.Println(response)
-	utils.ExecutarTemplate(w, "home.html", nil)
+	var publicacoes []models.Publicacao
+	if err = json.NewDecoder(response.Body).Decode(&publicacoes); err != nil {
+		utils.JSON(w, http.StatusUnprocessableEntity, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	utils.ExecutarTemplate(w, "home.html", publicacoes)
 }
