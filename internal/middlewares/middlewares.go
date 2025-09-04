@@ -1,0 +1,26 @@
+package middlewares
+
+import (
+	"devbook-app/internal/cookies"
+	"log"
+	"net/http"
+)
+
+// Logger() escreve informações da requisição no terminal.
+func Logger(proximaFuncao http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("\n-> %s %s %s", r.Method, r.RequestURI, r.Host)
+		proximaFuncao(w, r)
+	}
+}
+
+// Autenticar() veririca a existência de Cookies.
+func Autenticar(proximaFuncao http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if _, err := cookies.Ler(r); err != nil {
+			http.Redirect(w, r, "login", 302)
+			return
+		}
+		proximaFuncao(w, r)
+	}
+}
