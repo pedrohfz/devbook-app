@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"devbook-app/internal/config"
+	"devbook-app/internal/cookies"
 	"devbook-app/internal/request"
 	"devbook-app/pkg/models"
 	"devbook-app/pkg/utils"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 // CarregarTelaDeLogin() vai renderizar a tela de login.
@@ -41,5 +43,14 @@ func CarregarPaginaPrincipal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.ExecutarTemplate(w, "home.html", publicacoes)
+	cookie, _ := cookies.Ler(r)
+	usuarioID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	utils.ExecutarTemplate(w, "home.html", struct {
+		Publicacoes []models.Publicacao
+		UsuarioID   uint64
+	}{
+		Publicacoes: publicacoes,
+		UsuarioID:   usuarioID,
+	})
 }
