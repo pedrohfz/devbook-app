@@ -66,3 +66,28 @@ func CurtirPublicacao(w http.ResponseWriter, r *http.Request) {
 
 	utils.JSON(w, response.StatusCode, nil)
 }
+
+// DescurtirPublicacao() chama a API para decurtir uma publicação.
+func DescurtirPublicacao(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	publicacaoID, err := strconv.ParseUint(param["publicacaoID"], 10, 64)
+	if err != nil {
+		utils.JSON(w, http.StatusBadRequest, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/publicacoes/%d/descurtir", config.APIURL, publicacaoID)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodPost, url, nil)
+	if err != nil {
+		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		utils.TratarStatusCodeDeErro(w, response)
+		return
+	}
+
+	utils.JSON(w, response.StatusCode, nil)
+}
