@@ -10,10 +10,19 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 // CarregarTelaDeLogin() vai renderizar a tela de login.
 func CarregarTelaDeLogin(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Ler(r)
+
+	if cookie["token"] != "" {
+		http.Redirect(w, r, "/home", 302)
+		return
+	}
+
 	utils.ExecutarTemplate(w, "login.html", nil)
 }
 
@@ -53,4 +62,35 @@ func CarregarPaginaPrincipal(w http.ResponseWriter, r *http.Request) {
 		Publicacoes: publicacoes,
 		UsuarioID:   usuarioID,
 	})
+}
+
+// CarregarPaginaDeEdicaoDePublicacao() carrega a página de edição de publicação.
+func CarregarPaginaDeEdicaoDePublicacao(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	publicacaoID, err := strconv.ParseUint(param["publicacaoID"], 10, 64)
+	if err != nil {
+		utils.JSON(w, http.StatusBadRequest, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/publicacoes/%d", config.APIURL, publicacaoID)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
+	if err != nil {
+		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		utils.TratarStatusCodeDeErro(w, response)
+		return
+	}
+
+	var publicacao models.Publicacao
+	if err = json.NewDecoder(response.Body).Decode(&publicacao); err != nil {
+		utils.JSON(w, http.StatusUnprocessableEntity, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	utils.ExecutarTemplate(w, "atualizar-publicacao.html", publicacao)
 }

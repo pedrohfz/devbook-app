@@ -1,4 +1,4 @@
-$('#login').on('submit', fazerLogin);
+$("#login").on("submit", fazerLogin);
 
 function fazerLogin(evento) {
   evento.preventDefault();
@@ -7,14 +7,14 @@ function fazerLogin(evento) {
     url: "/login",
     method: "POST",
     data: {
-      email: $('#email').val(), // use # para id
-      senha: $('#senha').val(),
+      email: $("#email").val(),
+      senha: $("#senha").val(),
     },
   })
     .done(function () {
       window.location = "/home";
     })
     .fail(function () {
-      alert("Usuário ou senha inválidos");
+      Swal.fire("Ops...", "Usuário ou senha incorretos!", "error");
     });
 }

@@ -3,6 +3,7 @@ package cookies
 import (
 	"devbook-app/internal/config"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/securecookie"
 )
@@ -36,7 +37,7 @@ func Salvar(w http.ResponseWriter, ID, token string) error {
 	return nil
 }
 
-// Ler() retorna os valores armazenados nos cookies.
+// Ler() retorna os valores armazenados no cookie.
 func Ler(r *http.Request) (map[string]string, error) {
 	cookie, err := r.Cookie("dados")
 	if err != nil {
@@ -49,4 +50,15 @@ func Ler(r *http.Request) (map[string]string, error) {
 	}
 
 	return valores, nil
+}
+
+// Deletar() remove os valores armazenados no cookie.
+func Deletar(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "dados",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Unix(0, 0),
+	})
 }
