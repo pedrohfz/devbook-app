@@ -91,3 +91,39 @@ func DescurtirPublicacao(w http.ResponseWriter, r *http.Request) {
 
 	utils.JSON(w, response.StatusCode, nil)
 }
+
+// AtualizarPublicacao() chama a API para atualizar uma publicação.
+func AtualizarPublicacao(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	publicacaoID, err := strconv.ParseUint(param["publicacaoID"], 10, 64)
+	if err != nil {
+		utils.JSON(w, http.StatusBadRequest, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	r.ParseForm()
+	publicacao, err := json.Marshal(map[string]string{
+		"titulo":   r.FormValue("titulo"),
+		"conteudo": r.FormValue("conteudo"),
+	})
+
+	if err != nil {
+		utils.JSON(w, http.StatusBadRequest, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/publicacoes/%d", config.APIURL, publicacaoID)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodPut, url, bytes.NewBuffer(publicacao))
+	if err != nil {
+		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		utils.TratarStatusCodeDeErro(w, response)
+		return
+	}
+
+	utils.JSON(w, response.StatusCode, nil)
+}

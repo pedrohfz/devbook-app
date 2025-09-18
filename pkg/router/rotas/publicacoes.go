@@ -25,9 +25,15 @@ var rotasPublicacoes = []Rota{
 		Authentication: true,
 	},
 	{
-		URI:            "/publicacoes/{publicacaoID}/editar",
+		URI:            "/publicacoes/{publicacaoID}/atualizar",
 		Method:         http.MethodGet,
-		Function:       controllers.CarregarPaginaDeEdicaoDePublicacao,
+		Function:       controllers.CarregarPaginaDeAtualizacaoDePublicacao,
+		Authentication: true,
+	},
+	{
+		URI:            "/publicacoes/{publicacaoID}",
+		Method:         http.MethodPut,
+		Function:       controllers.AtualizarPublicacao,
 		Authentication: true,
 	},
 }
