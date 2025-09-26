@@ -40,3 +40,4 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 
 	utils.JSON(w, response.StatusCode, nil)
 }
+

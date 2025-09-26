@@ -121,3 +121,20 @@ func CarregarPaginaDeUsuarios(w http.ResponseWriter, r *http.Request) {
 
 	utils.ExecutarTemplate(w, "usuarios.html", usuarios)
 }
+
+// CarregarPerfilDoUsuario() carrega a página do perfil do usuário.
+func CarregarPerfilDoUsuario(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	usuarioID, err := strconv.ParseUint(param["usuarioID"], 10, 64)
+	if err != nil {
+		utils.JSON(w, http.StatusBadRequest, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	usuario, err := models.BuscarUsuarioCompleto(usuarioID, r)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(usuario)
+}
