@@ -4,6 +4,7 @@ import (
 	"devbook-app/internal/config"
 	"devbook-app/internal/request"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -33,9 +34,49 @@ func BuscarUsuarioCompleto(usuarioID uint64, r *http.Request) (Usuario, error) {
 	go BuscarSeguindo(canalSeguindo, usuarioID, r)
 	go BuscarPublicacoes(canalPublicacoes, usuarioID, r)
 
-	// TODO: Função principal da Goroutine
+	var (
+		usuario     Usuario
+		seguidores  []Usuario
+		seguindo    []Usuario
+		publicacoes []Publicacao
+	)
 
-	return Usuario{}, nil
+	for i := 0; i < 4; i++ {
+		select {
+		case usuarioCarregado := <-canalUsuario:
+			if usuarioCarregado.ID == 0 {
+				return Usuario{}, errors.New("erro ao buscar o usuário")
+			}
+
+			usuario = usuarioCarregado
+
+		case seguidoresCarregados := <-canalSeguidores:
+			if seguidoresCarregados == nil {
+				return Usuario{}, errors.New("erro ao buscar os seguidores")
+			}
+
+			seguidores = seguidoresCarregados
+
+		case seguindoCarregados := <-canalSeguindo:
+			if seguindoCarregados == nil {
+				return Usuario{}, errors.New("erro ao buscar quem o usuário está seguindo")
+			}
+
+			seguindo = seguindoCarregados
+
+		case publicacoesCarregadas := <-canalPublicacoes:
+			if publicacoesCarregadas == nil {
+				return Usuario{}, errors.New("erro ao buscar as publicações")
+			}
+
+			publicacoes = publicacoesCarregadas
+		}
+	}
+	usuario.Seguidores = seguidores
+	usuario.Seguindo = seguindo
+	usuario.Publicacoes = publicacoes
+
+	return usuario, nil
 }
 
 // BuscarDadosDoUsuario() chama a API para buscar os dados base do usuário.
