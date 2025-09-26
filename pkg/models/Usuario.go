@@ -1,6 +1,10 @@
 package models
 
 import (
+	"devbook-app/internal/config"
+	"devbook-app/internal/request"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -34,24 +38,78 @@ func BuscarUsuarioCompleto(usuarioID uint64, r *http.Request) (Usuario, error) {
 	return Usuario{}, nil
 }
 
-// BuscarDadosDoUsuario()
-func BuscarDadosDoUsuario(canal <-chan Usuario, usuarioID uint64, r *http.Request) {
-	// TODO: Função
+// BuscarDadosDoUsuario() chama a API para buscar os dados base do usuário.
+func BuscarDadosDoUsuario(canal chan<- Usuario, usuarioID uint64, r *http.Request) {
+	url := fmt.Sprintf("%s/usuarios/%d", config.APIURL, usuarioID)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
+	if err != nil {
+		canal <- Usuario{}
+		return
+	}
+	defer response.Body.Close()
+
+	var usuario Usuario
+	if err = json.NewDecoder(response.Body).Decode(&usuario); err != nil {
+		canal <- Usuario{}
+		return
+	}
+
+	canal <- usuario
 }
 
-// BuscarSeguidores()
-func BuscarSeguidores(canal <-chan []Usuario, usuarioID uint64, r *http.Request) {
-	// TODO: Função
+// BuscarSeguidores() chama a API para buscar os seguidores do usuário.
+func BuscarSeguidores(canal chan<- []Usuario, usuarioID uint64, r *http.Request) {
+	url := fmt.Sprintf("%s/usuarios/%d/seguidores", config.APIURL, usuarioID)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
+	if err != nil {
+		canal <- nil
+		return
+	}
+	defer response.Body.Close()
 
+	var seguidores []Usuario
+	if err = json.NewDecoder(response.Body).Decode(&seguidores); err != nil {
+		canal <- nil
+		return
+	}
+
+	canal <- seguidores
 }
 
-// BuscarSeguindo()
-func BuscarSeguindo(canal <-chan []Usuario, usuarioID uint64, r *http.Request) {
-	// TODO: Função
+// BuscarSeguindo() chama a API para buscar os usuários seguidos por um usuário.
+func BuscarSeguindo(canal chan<- []Usuario, usuarioID uint64, r *http.Request) {
+	url := fmt.Sprintf("%s/usuarios/%d/seguindo", config.APIURL, usuarioID)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
+	if err != nil {
+		canal <- nil
+		return
+	}
+	defer response.Body.Close()
 
+	var seguindo []Usuario
+	if err = json.NewDecoder(response.Body).Decode(&seguindo); err != nil {
+		canal <- nil
+		return
+	}
+
+	canal <- seguindo
 }
 
-// BuscarPublicacoes()
-func BuscarPublicacoes(canal <-chan []Publicacao, usuarioID uint64, r *http.Request) {
-	// TODO: Função
+// BuscarPublicacoes() chama a API para buscar as publicações de um usuário.
+func BuscarPublicacoes(canal chan<- []Publicacao, usuarioID uint64, r *http.Request) {
+	url := fmt.Sprintf("%s/usuarios/%d/publicacoes", config.APIURL, usuarioID)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
+	if err != nil {
+		canal <- nil
+		return
+	}
+	defer response.Body.Close()
+
+	var publicacoes []Publicacao
+	if err = json.NewDecoder(response.Body).Decode(&publicacoes); err != nil {
+		canal <- nil
+		return
+	}
+
+	canal <- publicacoes
 }
