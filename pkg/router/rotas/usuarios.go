@@ -30,4 +30,16 @@ var rotasUsuarios = []Rota{
 		Function:       controllers.CarregarPerfilDoUsuario,
 		Authentication: true,
 	},
+	{
+		URI:            "/usuarios/{usuarioID}/parar-de-seguir",
+		Method:         http.MethodPost,
+		Function:       controllers.PararDeSeguirUsuario,
+		Authentication: true,
+	},
+	{
+		URI:            "/usuarios/{usuarioID}/seguir",
+		Method:         http.MethodPost,
+		Function:       controllers.SeguirUsuario,
+		Authentication: true,
+	},
 }
