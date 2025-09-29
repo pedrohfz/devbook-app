@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevBook - Meu Perfil </title>
-    <link href="/internal/assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="/assets/css/bootstrap.css" rel="stylesheet" />
 </head>
+
 <body>
-    {{ template "cabecalho" }}
+    {{ template "header" }}
+
 
     <div class="container-fluid">
         <div class="row mt-4">
@@ -77,11 +80,15 @@
 
     </div>
 
-    {{ template "rodape" }}
+
+    {{ template "footer" }}
+
     {{ template "modal-seguidores" . }}
     {{ template "modal-seguindo" . }}
+
     {{ template "scripts" }}
     <script src="/assets/js/publicacoes.js"></script>
     <script src="/assets/js/usuario.js"></script>
 </body>
+
 </html>
