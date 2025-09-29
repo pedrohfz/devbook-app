@@ -42,4 +42,10 @@ var rotasUsuarios = []Rota{
 		Function:       controllers.SeguirUsuario,
 		Authentication: true,
 	},
+	{
+		URI:            "/perfil",
+		Method:         http.MethodGet,
+		Function:       controllers.CarregarPerfilDoUsuarioLogado,
+		Authentication: true,
+	},
 }
