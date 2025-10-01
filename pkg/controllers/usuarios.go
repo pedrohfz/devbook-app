@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"devbook-app/internal/config"
+	"devbook-app/internal/cookies"
 	"devbook-app/internal/request"
 	"devbook-app/pkg/utils"
 	"encoding/json"
@@ -81,6 +82,40 @@ func SeguirUsuario(w http.ResponseWriter, r *http.Request) {
 
 	url := fmt.Sprintf("%s/usuarios/%d/seguir", config.APIURL, usuarioID)
 	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodPost, url, nil)
+	if err != nil {
+		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		utils.TratarStatusCodeDeErro(w, response)
+		return
+	}
+
+	utils.JSON(w, response.StatusCode, nil)
+}
+
+// EditarUsuario() chama a API para editar um usuário.
+func EditarUsuario(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	usuario, err := json.Marshal(map[string]string{
+		"nome":  r.FormValue("nome"),
+		"nick":  r.FormValue("nick"),
+		"email": r.FormValue("email"),
+	})
+	
+	if err != nil {
+		utils.JSON(w, http.StatusBadRequest, utils.ErroAPI{Erro: err.Error()})
+		return
+	}
+
+	cookie, _ := cookies.Ler(r)
+	usuarioID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	url := fmt.Sprintf("%s/usuarios/%d", config.APIURL, usuarioID)
+	response, err := request.FazerRequisicaoComAutenticacao(r, http.MethodPut, url, bytes.NewBuffer(usuario))
 	if err != nil {
 		utils.JSON(w, http.StatusInternalServerError, utils.ErroAPI{Erro: err.Error()})
 		return
